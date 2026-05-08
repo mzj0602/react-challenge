@@ -1,0 +1,35 @@
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+
+const orderRouter = require("./routes/orderRoute");
+const paymentRouter = require("./routes/paymentRoute");
+const productRouter = require("./routes/productRoute");
+const userRouter = require("./routes/userRoute");
+const realfractionRouter = require("./routes/realfractionRoute");
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use("/api/order", orderRouter);
+app.use("/api/payment", paymentRouter);
+app.use("/api/product", productRouter);
+app.use("/api/user", userRouter);
+app.use("/api/realfraction", realfractionRouter);
+
+const rootDir = path.resolve();
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(rootDir, "frontend", "build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(rootDir, "frontend", "build", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Server is Running! 🚀");
+  });
+}
+
+module.exports = app;
